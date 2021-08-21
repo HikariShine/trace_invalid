@@ -93,7 +93,7 @@ async function main() {
           log_data.push(gas_wasted2)
           log_data.push(gas_wasted3)
 
-          const file = fs.createWriteStream('data/block_' + block_number + '.csv')
+          const file = fs.createWriteStream('data/invalid.csv')
           file.write(log_data.join(',') + '\n')
         }
     })
