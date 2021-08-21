@@ -91,7 +91,7 @@ async function main() {
           console.log('\n\n')
           */
 
-          if (! error_found || block_number == 0) {
+          if ( error_found == 0 && block_number != 0) {
             console.log('block:', block_number)
   
             log_data.push(block_number)
