@@ -1,16 +1,15 @@
 {
   gas_left: [],
+  contract_call: false,
   invalid: false,
   input_data: null,
   input_data_cost: 0,
   ops: [],
 
   step: function(log, db) {
-    var op = log.op.toString()
-
+    this.contract_call = true
     this.gas_left.push(log.getGas())
-
-    this.ops.push(log.getCost())
+    this.ops.push(log.op.toString())
     if (log.op.toNumber() == 0xfe) {
         this.invalid = true
     }
@@ -30,11 +29,16 @@
   result: function(ctx, db) {
     var gas_used = this.gas_left[0] - this.gas_left[this.gas_left.lenght - 1] 
     return {
+      'block': ctx.block,
+      'from': toHex(ctx.from),
+      'to': toHex(ctx.to),
+      'contract_call': this.contract_call,
       'start_gas': this.gas_left[0],
       'end_gas': this.gas_left[this.gas_left.length - 1],
       'gas_used': ctx.gasUsed,
+      'intrinsic_gas': ctx.intrinsicGas,
       'invalid': this.invalid,
-      'input_data': this.input_data,
+      'input_data': toHex(this.input_data),
       'input_data_cost': this.input_data_cost,
       'ops': this.ops,
     }
