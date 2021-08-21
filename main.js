@@ -10,8 +10,9 @@ function parseHex(h) {
 
 async function main() {
     const blocks = {}
-    const file = fs.createWriteStream('histogram.csv')
     const ws = new WebSocket('ws://127.0.0.1:9546', { maxPayload: 1000 * 1024 * 1024 })
+
+    const file = fs.createWriteStream('data/invalid.csv')
     var subId
     ws.on('message', (ev) => {
         const msg = JSON.parse(ev)
@@ -43,9 +44,20 @@ async function main() {
           var gas_wasted1 = 0 // Sum of gas wasted (gasLimit)
           var gas_wasted2 = 0 // Sum of gas wasted (end_gas)
           var gas_wasted3 = 0 // Sum of gas wasted (end_gas - intrinsic_gas)<-
+          var error_found = 0
           for (const res of msg.result) {
             txs_count++
-            result = res['result']
+
+            var result = null
+
+            if ('result' in res) {
+              result = res['result']
+            } else {
+              console.log(res)
+              error_found = 1
+              break
+            }
+            
             // sum transactions' gasUsed
             // for invalid txs, gasUsed = gas_used
             if (result['invalid']) {
@@ -66,9 +78,6 @@ async function main() {
               block_gas_used = parseInt(blocks_data[block_number]['gasUsed'], 16)
             }
           }
-
-          console.log('block:', block_number)
-
           /*
           console.log('GasUsed:', block_gas_used)
           console.log('GasUsedTxs:', txs_gas_used)
@@ -82,19 +91,22 @@ async function main() {
           console.log('\n\n')
           */
 
-          log_data.push(block_number)
-          log_data.push(block_gas_used)
-          log_data.push(txs_gas_used)
-          log_data.push(gas_used_ok)
-          log_data.push(gas_used_invalid)
-          log_data.push(txs_count)
-          log_data.push(invalid_count)
-          log_data.push(gas_wasted1)
-          log_data.push(gas_wasted2)
-          log_data.push(gas_wasted3)
+          if (! error_found || block_number == 0) {
+            console.log('block:', block_number)
+  
+            log_data.push(block_number)
+            log_data.push(block_gas_used)
+            log_data.push(txs_gas_used)
+            log_data.push(gas_used_ok)
+            log_data.push(gas_used_invalid)
+            log_data.push(txs_count)
+            log_data.push(invalid_count)
+            log_data.push(gas_wasted1)
+            log_data.push(gas_wasted2)
+            log_data.push(gas_wasted3)
 
-          const file = fs.createWriteStream('data/invalid.csv')
-          file.write(log_data.join(',') + '\n')
+            file.write(log_data.join(',') + '\n')
+          }
         }
     })
     ws.on('error', (err) => {
