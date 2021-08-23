@@ -90,7 +90,7 @@ async function main() {
           */
 
           if ( error_found == 0 && block_number != 0) {
-            console.log('block:', block_number)
+            console.log('block:', block_number, "[", error_found, "]")
   
             log_data.push(block_number)
             log_data.push(block_gas_used)
