@@ -22,7 +22,6 @@ for ( result of res) {
   }
 
   total_gas_used += real_gas_used
-  console.log("Simple Transfers:", simple_transfers)
 
   /*
   console.log('gu:', gas_used)
@@ -34,4 +33,5 @@ for ( result of res) {
   */
   }
 
+console.log("Simple Transfers:", simple_transfers)
 console.log("Total Transactions:", total_txs)
