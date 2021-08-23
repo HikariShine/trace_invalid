@@ -45,6 +45,7 @@ async function main() {
           var gas_wasted2 = 0 // Sum of gas wasted (end_gas)
           var gas_wasted3 = 0 // Sum of gas wasted (end_gas - intrinsic_gas)<-
           var error_found = 0
+
           for (const res of msg.result) {
             txs_count++
 
@@ -58,19 +59,16 @@ async function main() {
               break
             }
             
+            txs_gas_used += result['gas_used'] + result['intrinsic_gas']
+
             // sum transactions' gasUsed
-            // for invalid txs, gasUsed = gas_used
             if (result['invalid']) {
-              txs_gas_used += result['gas_used']
-              gas_used_invalid += result['gas_used']
+              gas_used_invalid += result['gas_used'] + result['intrinsic_gas']
               invalid_count++
               gas_wasted1 += result['start_gas']
               gas_wasted2 += result['end_gas']
               gas_wasted3 += result['end_gas'] - result['intrinsic_gas']
             } else {
-              // for contract calls ending correctly and simple calls:
-              // gasUsed = gas_used + intrinsic_call
-              txs_gas_used += result['gas_used'] + result['intrinsic_gas']
               gas_used_ok += result['gas_used'] + result['intrinsic_gas']
             }
             block_number = result['block']
@@ -106,6 +104,17 @@ async function main() {
             log_data.push(gas_wasted3)
 
             file.write(log_data.join(',') + '\n')
+            // Log when gas_wasted3 is < 0
+            if (gas_wasted3 < 0) {
+              gw_file = fs.createWriteStream('data/invalid_err/error_' + block_number)
+              gw_file.write(JSON.stringify(msg.result, null, 4))
+            } else {
+              // Log when TxsGasUsed != BlockGasUsed
+              if (block_gas_used != txs_gas_used) {
+                gd_file = fs.createWriteStream('data/gasdiff/error_' + block_number)
+                gd_file.write(JSON.stringify(msg.result, null, 4))
+              }
+            }
           }
         }
     })
