@@ -39,3 +39,12 @@ def trace_transaction(tx_hash, tracer):
     response = requests.post(RPC_ENDPOINT, data=json.dumps(payload), headers = head)
     return response.json()
 
+def eth_blockNumber():
+    payload = {
+            'method': 'eth_blockNumber',
+            'params': [],
+            'id': 1,
+            }
+    response = requests.post(RPC_ENDPOINT, data=json.dumps(payload), headers = head)
+    return response.json()
+
