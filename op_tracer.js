@@ -5,11 +5,13 @@
   input_data: null,
   input_data_cost: 0,
   ops: [],
+  depth: [],
 
   step: function(log, db) {
     this.contract_call = true
     this.gas_left.push(log.getGas())
     this.ops.push(log.op.toString())
+    this.depth.push(log.getDepth())
     if (log.op.toNumber() == 0xfe) {
         this.invalid = true
     }
@@ -41,6 +43,7 @@
       'input_data': toHex(this.input_data),
       'input_data_cost': this.input_data_cost,
       'ops': this.ops,
+      'depth': this.depth,
     }
   },
   fault: function(log, db){}
