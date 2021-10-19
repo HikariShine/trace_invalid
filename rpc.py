@@ -3,7 +3,7 @@ import json
 
 head = {"Content-type": "application/json"}
 RPC_LOCAL = 'http://localhost:8545'
-RPC_INFURA = open('./infura_data.txt', 'r').read().strip()
+#RPC_INFURA = open('./infura_data.txt', 'r').read().strip()
 
 RPC_ENDPOINT = RPC_LOCAL # Change to infura if needed
 
@@ -30,7 +30,7 @@ def get_transaction_receipt(tx_hash):
     response = requests.post(RPC_ENDPOINT, data=json.dumps(payload), headers = head)
     return response.json()
 
-def trace_transaction(tx_hash, tracer):
+def debug_traceTransaction(tx_hash, tracer):
     payload = {
         'method': 'debug_traceTransaction',
         'params': [tx_hash, {'tracer': tracer, 'timeout': '500s'}],
@@ -38,6 +38,16 @@ def trace_transaction(tx_hash, tracer):
     }
     response = requests.post(RPC_ENDPOINT, data=json.dumps(payload), headers = head)
     return response.json()
+
+def debug_traceBlockByNumber(block_number, tracer):
+    payload = {
+      "method": "debug_traceBlockByNumber",
+      "params": [block_number, { tracer: tracer, 'timeout': '500s' }],
+      "id": 67 
+    }
+    response = requests.post(RPC_ENDPOINT, data=json.dumps(payload), headers= head)
+    return response.json()
+
 
 def eth_blockNumber():
     payload = {
