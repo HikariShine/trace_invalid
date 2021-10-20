@@ -77,7 +77,7 @@ async function main() {
                 gas_used_invalid += result['gas_used'] + result['intrinsic_gas']
                 invalid_count++
                 gas_wasted1 += result['start_gas']
-                gas_wasted2 += result['end_gas']
+                gas_wasted2 += result['gas_wasted']
                 gas_wasted3 += result['end_gas'] - result['intrinsic_gas']
 
                 log_txs.push(result['block'])
@@ -89,19 +89,13 @@ async function main() {
                 log_txs.push(result['input_data'])
                 log_txs.push(result['input_data_cost'])
 
-                lenDepth = result['depth'].length
-                lastDepth = result['depth'][lenDepth - 1]
+                txs_file.write(log_txs.join(',') + '\n')
 
-                if (lastDepth != 1) {
-                  console.log('>>>>FOUND')
-                  console.log(result['block'])
-                  console.log(result['depth'])
-                  console.log('lenDepth:', lenDepth)
-                  console.log('lastDepth:', lastDepth)
-                  console.log('<<<<')
+                var lastOp = result['ops'][result['ops'].length - 1]
+                if (lastOp[1] != '0xfe') {
+                  console.log(lastOp)
                 }
 
-                txs_file.write(log_txs.join(',') + '\n')
               } else {
                 gas_used_ok += result['gas_used'] + result['intrinsic_gas']
               }
@@ -130,6 +124,7 @@ async function main() {
             log_data.push(gas_wasted3)
 
             file.write(log_data.join(',') + '\n')
+            /*
             // Log when gas_wasted3 is < 0
             if (gas_wasted3 < 0) {
               gw_file = fs.createWriteStream('data/invalid_err/error_' + block_number)
@@ -141,6 +136,7 @@ async function main() {
                 gd_file.write(JSON.stringify(msg.result, null, 4))
               }
             }
+            */
           }
 
           if (error_found && block_number != 0) { // Try tracing the block again

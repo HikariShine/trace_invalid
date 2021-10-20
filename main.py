@@ -49,12 +49,10 @@ if True:
             block = rs['block']
             invalid = rs['invalid']
             if invalid:
-                depth = [str(e) for e in rs['depth']]
-                line = [tx['blockNumber'], tx['hash'], tx['from'], tx['to'], tx['gas'], tx['gasPrice'], tx['transactionIndex'], str(rs['start_gas']), str(rs['end_gas']), str(rs['gas_used']), str(rs['intrinsic_gas']), str(rs['input_data_cost']), ','.join(depth) ]
+                #ops = [str((str(e[0]), e[1], str(e[2]))) for e in rs['ops']]
+                ops = [str(e) for e in rs['ops']]
+                line = [tx['blockNumber'], tx['hash'], tx['from'], tx['to'], tx['gas'], tx['gasPrice'], tx['transactionIndex'], str(rs['start_gas']), str(rs['end_gas']), str(rs['gas_used']), str(rs['intrinsic_gas']), str(rs['input_data_cost']), ','.join(ops) ]
                 print(line)
-                print(rs['ops'])
-                print(trace['result'].keys())
-                #input(">>>>>>>>>>>>>>>")
                 invalid_csv_file.write(','.join(line) + '\n')
         else:
             print('Err:', trace)
