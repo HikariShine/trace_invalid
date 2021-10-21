@@ -42,7 +42,7 @@ def debug_traceTransaction(tx_hash, tracer):
 def debug_traceBlockByNumber(block_number, tracer):
     payload = {
       "method": "debug_traceBlockByNumber",
-      "params": [block_number, { tracer: tracer, 'timeout': '500s' }],
+      "params": [block_number, { 'tracer': tracer, 'timeout': '500s' }],
       "id": 67 
     }
     response = requests.post(RPC_ENDPOINT, data=json.dumps(payload), headers= head)
