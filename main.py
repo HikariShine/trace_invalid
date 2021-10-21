@@ -10,7 +10,6 @@ last_block = rpc.eth_blockNumber()
 last_block = int(last_block['result'], 16)
 current_block = last_block - 125
 
-result_file = open('data/py_invalid.csv', 'a')
 
 current_block = None
 
@@ -24,7 +23,10 @@ while True:
         time.sleep(1)
 
     current_block_hex = hex(current_block)
-    msg = rpc.debug_traceBlockByNumber(current_block_hex, tracer_script)
+    try:
+        msg = rpc.debug_traceBlockByNumber(current_block_hex, tracer_script)
+    except:
+        continue
 
     print(current_block, '/', last_block)
 
@@ -44,7 +46,6 @@ while True:
             break
 
         if result['invalid']:
-            print('invalid tx found!')
             invalid_count += 1
             gas_wasted += result['gas_wasted']
 
@@ -52,7 +53,11 @@ while True:
         continue
     else:
         if invalid_count > 0:
+            print(invalid_count, 'invalid txs found!')
             line = [str(current_block), str(invalid_count), str(gas_wasted)]
+
+            result_file = open('data/py_invalid.csv', 'a')
             result_file.write(','.join(line) + '\n')
+            result_file.close()
         current_block += 1
 
